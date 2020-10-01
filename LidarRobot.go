@@ -21,6 +21,7 @@ func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	//} else {
 	//	fmt.Println("error with message")
 	//}
+	lcd.Write("Hello")
 	fmt.Println(lidarReading)
 	fmt.Println(message)
 	time.Sleep(time.Second * 3)
