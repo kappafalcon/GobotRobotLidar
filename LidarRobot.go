@@ -38,7 +38,7 @@ func main() {
 	}
 	robot := gobot.NewRobot("Gopigo Pi4 Bot",
 		[]gobot.Connection{raspberryPi},
-		[]gobot.Device{gopigo3, lidarSensor},
+		[]gobot.Device{gopigo3, lidarSensor, lcd},
 		workerThread)
 
 	robot.Start()
