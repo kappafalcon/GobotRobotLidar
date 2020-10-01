@@ -12,13 +12,14 @@ import (
 func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver,
 	lcd *i2c.GroveLcdDriver) {
 	lcd.Start()
+	lcd.SetRGB(100, 0, 0)
 	for { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
 		}
 		message := fmt.Sprintf("Lidar Reading: %d", lidarReading)
-
+		lcd.Clear()
 		lcd.Write(message)
 		fmt.Println(lidarReading)
 		fmt.Println(message)
