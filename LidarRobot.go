@@ -11,21 +11,22 @@ import (
 
 func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver,
 	lcd *i2c.GroveLcdDriver) {
-	lidarReading, err := lidarSensor.Distance()
-	if err != nil {
-		fmt.Println("Error reading lidar sensor %+v", err)
+	for { //loop forever
+		lidarReading, err := lidarSensor.Distance()
+		if err != nil {
+			fmt.Println("Error reading lidar sensor %+v", err)
+		}
+		message := fmt.Sprintf("Lidar Reading: %d", lidarReading)
+		//if message != nil {
+		//	_ = lcd.Write(message)
+		//} else {
+		//	fmt.Println("error with message")
+		//}
+		lcd.Write("Hello")
+		fmt.Println(lidarReading)
+		fmt.Println(message)
+		time.Sleep(time.Second * 3)
 	}
-	message := fmt.Sprintf("Lidar Reading: %d", lidarReading)
-	//if message != nil {
-	//	_ = lcd.Write(message)
-	//} else {
-	//	fmt.Println("error with message")
-	//}
-	lcd.Write("Hello")
-	fmt.Println(lidarReading)
-	fmt.Println(message)
-	time.Sleep(time.Second * 3)
-
 }
 
 func main() {
