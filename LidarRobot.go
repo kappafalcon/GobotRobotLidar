@@ -11,6 +11,7 @@ import (
 
 func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver,
 	lcd *i2c.GroveLcdDriver) {
+	lcd.Start()
 	for { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
