@@ -19,24 +19,24 @@ func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 	if err != nil {
 		fmt.Println("error starting lidarSensor")
 	}
-	err = lcd.SetRGB(100, 0, 0)
-	if err != nil {
-		fmt.Println("Error setting lcd color")
-	}
+//	err = lcd.SetRGB(0, 200, 0)
+//	if err != nil {
+//		fmt.Println("Error setting lcd color")
+//	}
 	for { //loop forever
 		lidarReading, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Println("Error reading lidar sensor %+v", err)
 		}
 		message := fmt.Sprintf("Lidar Reading: %d", lidarReading)
-		err = lcd.Clear()
-		if err != nil {
-			fmt.Println("error clearing lcd")
-		}
-		err = lcd.Home()
-		if err != nil {
-			fmt.Println("error homeing lcd")
-		}
+//		err = lcd.Clear()
+//		if err != nil {
+//			fmt.Println("error clearing lcd")
+//		}
+//		err = lcd.Home()
+//		if err != nil {
+//			fmt.Println("error homeing lcd")
+//		}
 		err = lcd.Write(message)
 		if err != nil {
 			fmt.Println("error writing to LCD")
