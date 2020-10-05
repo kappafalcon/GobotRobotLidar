@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gobot.io/x/gobot"
+	"gobot.io/x/gobot/drivers/aio"
 	"gobot.io/x/gobot/drivers/i2c"
 	g "gobot.io/x/gobot/platforms/dexter/gopigo3"
 	"gobot.io/x/gobot/platforms/raspi"
@@ -53,12 +54,13 @@ func main() {
 	gopigo3 := g.NewDriver(raspberryPi)
 	lidarSensor := i2c.NewLIDARLiteDriver(raspberryPi)
 	lcd := i2c.NewGroveLcdDriver(raspberryPi)
+	lightSensor := aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1")
 	workerThread := func() {
-		robotMainLoop(raspberryPi, gopigo3, lidarSensor /*lcd*/)
+		robotMainLoop(raspberryPi, gopigo3, lidarSensor, lcd)
 	}
 	robot := gobot.NewRobot("Gopigo Pi4 Bot",
 		[]gobot.Connection{raspberryPi},
-		[]gobot.Device{gopigo3, lidarSensor, lcd},
+		[]gobot.Device{gopigo3, lidarSensor, lcd, lightSensor},
 		workerThread)
 
 	robot.Start()
