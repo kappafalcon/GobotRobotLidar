@@ -56,7 +56,7 @@ func main() {
 	lcd := i2c.NewGroveLcdDriver(raspberryPi)
 	lightSensor := aio.NewGroveLightSensorDriver(gopigo3, "AD_2_1")
 	workerThread := func() {
-		robotMainLoop(raspberryPi, gopigo3, lidarSensor, lcd)
+		robotMainLoop(raspberryPi, gopigo3, lidarSensor /*lcd*/)
 	}
 	robot := gobot.NewRobot("Gopigo Pi4 Bot",
 		[]gobot.Connection{raspberryPi},
