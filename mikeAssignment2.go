@@ -12,6 +12,7 @@ import (
 
 var lidarCheck = false
 var lowerBound = 10
+var upperBound = 50
 
 func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver,
 
