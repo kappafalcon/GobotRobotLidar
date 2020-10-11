@@ -51,6 +51,9 @@ func seekForward(gopigo3 *g.Driver) { // drive forward for one second
 
 func measureForward(gopigo3 *g.Driver) { // drive forward for one second
 	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, 100)
+	g.WHEEL_CIRCUMFERENCE
+	startPositionLeft = g.GET_MOTOR_ENCODER_LEFT //
+
 	time.Sleep(time.Second)
 	gopigo3.Halt()
 }
