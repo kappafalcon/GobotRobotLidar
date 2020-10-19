@@ -14,7 +14,7 @@ var isReadingObject = false
 var lowerBound = 10
 var upperBound = 25
 var checker = 0
-var seconds = 0
+var halfSeconds = 0
 var length = 0.00
 var width = 0.00
 var DPS = 50
@@ -39,34 +39,28 @@ func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 		message := fmt.Sprintf("Lidar Reading: %d", lidarReading)
 
 		if (upperBound > lidarReading) && (lidarReading > lowerBound) { //If value suggests object, get reading and continue to drive.
-
 			isReadingObject = true
 			fmt.Println(message)
 			measureForward(gopigo3)
-			seconds += 1
+			halfSeconds += 1
 			if checker == 0 {
-				length = float64(seconds) * float64(DPS) * .05803
+				length = float64(halfSeconds) * float64(DPS/2) * .05803
 			} else if checker == 1 {
-				width = float64(seconds) * float64(DPS) * .05803
+				width = float64(halfSeconds) * float64(DPS/2) * .05803
+
+			} else if (upperBound - lidarReading) < 0 { //Adjustments to turning if not in bounds
+				gopigo3.SetMotorDps(g.MOTOR_RIGHT, 5)
+			} else if (lowerBound - lidarReading) > 5 {
+				gopigo3.SetMotorDps(g.MOTOR_LEFT, 5)
 			}
 			measuredSides = 1
 
 		} else if (lidarReading > upperBound) && (measuredSides > 0) {
-			fmt.Print("Length of side 1 equals: ", length, "cm")
-			seconds = 0
+			halfSeconds = 0
 			checker = 1
-			//seconds += 1
-			//gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, 100)
-			//fmt.Print("Length equals:", length)
-			//if seconds > 2 {
-			//	gopigo3.SetMotorDps(g.MOTOR_RIGHT, 90) // ROTATE 90 DEGREES
-			//	gopigo3.SetMotorDps(g.MOTOR_LEFT, 90)
-			//} else if seconds >=4 {
-			//	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, 0)
-			//}
-			//
-			//gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, 100) // AFTER ROTATION DRIVE STRAIGHT
-			//seconds = 0
+			gopigo3.Halt()
+			stepAndRotate(gopigo3)
+			seekForward(gopigo3)
 
 		} else { // Move forward to seek object
 			seekForward(gopigo3)
@@ -74,6 +68,8 @@ func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i
 			fmt.Println("Seeking...")
 		}
 	}
+	fmt.Print("Length of side 1 equals: ", length, "cm")
+	fmt.Print("Width of side 2 equals: ", width, "cm")
 }
 
 func seekForward(gopigo3 *g.Driver) { // drive forward for one second
@@ -83,11 +79,24 @@ func seekForward(gopigo3 *g.Driver) { // drive forward for one second
 }
 
 func measureForward(gopigo3 *g.Driver) { // drive forward for one second
-	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, DPS)
+	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, 100)
+	gopigo3.SetLED(g.LED_EYE_LEFT+g.LED_EYE_RIGHT, 0, 0, 255)
 	time.Sleep(time.Second)
-
+	gopigo3.Halt()
 }
 
+func stepAndRotate(gopigo3 *g.Driver) {
+	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, DPS*2)
+	time.Sleep(time.Second * 3)
+	//90 degree rotation
+	gopigo3.SetMotorDps(g.MOTOR_LEFT, -110)
+	gopigo3.SetMotorDps(g.MOTOR_RIGHT, 110)
+	time.Sleep(time.Second * 2)
+	gopigo3.SetMotorDps(g.MOTOR_LEFT+g.MOTOR_RIGHT, DPS)
+	time.Sleep(time.Second / 2)
+	gopigo3.Halt()
+
+}
 func main() {
 	raspberryPi := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspberryPi)
