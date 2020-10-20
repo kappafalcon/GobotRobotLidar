@@ -39,6 +39,13 @@ func setIsReading(lidarSensor *i2c.LIDARLiteDriver) {
 	}
 
 	for { //While true
+
+		//get lidar reading
+		lidarReading, err := lidarSensor.Distance()
+		if err != nil {
+			fmt.Println("Error reading lidar sensor %+v", err)
+		}
+
 		if (upperBound > lidarReading) && (lidarReading > lowerBound) { // if lidar suggests object, isReading = true
 			if *&isReadingObject {
 				continue
