@@ -24,6 +24,7 @@ var lidarReading = 0
 var length = 0.00
 var width = 0.00
 var finished = false
+var currLast [2]int
 
 func setIsReading(lidarSensor *i2c.LIDARLiteDriver) {
 	//check to make sure lidar sensor exists / has no issues; Kick out otherwise
@@ -61,6 +62,27 @@ func seekForward(gopigo3 *g.Driver) { // drive forward for one second
 	gopigo3.Halt()
 }
 
+func correct(gopigo3 *g.Driver) {
+
+	//set initial vals
+	currLast[0] = 0
+	currLast[0] = 0
+
+	if *&isReadingObject {
+		*&currLast[1] = *&lidarReading
+		//if error right -- correct left
+		if *&currLast[1] > *&currLast[0] {
+			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS+5)
+		} else if *&currLast[0] > *&currLast[1] {
+			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS+5)
+		} else {
+
+		}
+		*&currLast[0] = *&currLast[1]
+
+	}
+}
+
 func measureForward(gopigo3 *g.Driver) float64 {
 	var side = 0.00
 	// set indicator light
@@ -94,6 +116,7 @@ func stepAndRotate(gopigo3 *g.Driver) {
 
 func robotMainLoop(piProcessor *raspi.Adaptor, gopigo3 *g.Driver, lidarSensor *i2c.LIDARLiteDriver) {
 	go setIsReading(lidarSensor)
+	go correct(gopigo3)
 
 	for { // while true
 		if finished {
