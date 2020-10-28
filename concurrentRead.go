@@ -1,7 +1,7 @@
 /*
 #	ConcurrentRead.go
 #	Written by Kyle S. && Mike D.
-#	Last edit 10/20/20
+#	Last edit 10/26/20
 */
 package main
 
@@ -19,6 +19,9 @@ import (
 var isReadingObject = false
 var lowerBound = 10
 var upperBound = 40
+
+const targetValue = 25
+
 var measureDPS = 50
 var lidarReading = 0
 var length = 0.00
@@ -61,12 +64,13 @@ func seekForward(gopigo3 *g.Driver) { // drive forward for one second
 	gopigo3.Halt()
 }
 
-func measureForward(gopigo3 *g.Driver) float64 {
-	var side = 0.00
+func measureForward(gopigo3 *g.Driver) float64 { //Measures along the side of a box until reaching end
+	side := 0.00
 	// set indicator light
 	gopigo3.SetLED(g.LED_EYE_LEFT+g.LED_EYE_RIGHT, 0, 0, 255)
 	start := time.Now()
-	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, measureDPS)
+	feedbackControl(gopigo3)
+	//gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, measureDPS)
 	for {
 		//wait until not reading object
 		if !*&isReadingObject {
@@ -78,7 +82,7 @@ func measureForward(gopigo3 *g.Driver) float64 {
 	}
 }
 
-func stepAndRotate(gopigo3 *g.Driver) {
+func stepAndRotate(gopigo3 *g.Driver) { //Drives forward, then makes a 90 degree turn
 	gopigo3.SetMotorDps(g.MOTOR_RIGHT+g.MOTOR_LEFT, measureDPS*2)
 	time.Sleep(time.Second * 3)
 
@@ -89,6 +93,20 @@ func stepAndRotate(gopigo3 *g.Driver) {
 	gopigo3.SetMotorDps(g.MOTOR_LEFT+g.MOTOR_RIGHT, measureDPS)
 	time.Sleep(time.Second / 2)
 	gopigo3.Halt()
+
+}
+
+func feedbackControl(gopigo3 *g.Driver) { //Adjustment based on lidar readings
+	output := targetValue - lidarReading
+	if output > 5 {
+		gopigo3.SetMotorDps(g.MOTOR_LEFT, measureDPS+output)
+		gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS)
+	} else if output < -5 {
+		gopigo3.SetMotorDps(g.MOTOR_LEFT, measureDPS)
+		gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS-output)
+	} else {
+		gopigo3.SetMotorDps(g.MOTOR_LEFT+g.MOTOR_RIGHT, measureDPS)
+	}
 
 }
 
