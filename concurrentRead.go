@@ -20,8 +20,8 @@ var isReadingObject = false
 
 const lowerBound = 10
 const upperBound = 40
+const measureDPS = 50
 
-var measureDPS = 50
 var lidarReading = 0
 var length = 0.00
 var width = 0.00
