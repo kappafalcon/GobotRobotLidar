@@ -18,7 +18,7 @@ import (
 
 var isReadingObject = false
 var lowerBound = 10
-var upperBound = 40
+var upperBound = 45
 var measureDPS = 50
 var lidarReading = 0
 var length = 0.00
@@ -66,17 +66,21 @@ func correct(gopigo3 *g.Driver) {
 
 	//set initial vals
 	currLast[0] = 0
-	currLast[0] = 0
+	currLast[1] = 0
 
 	if *&isReadingObject {
 		*&currLast[1] = *&lidarReading
 		//if error right -- correct left
 		if *&currLast[1] > *&currLast[0] {
-			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS+5)
+			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS+8)
+			gopigo3.SetMotorDps(g.MOTOR_LEFT, measureDPS-8)
+			fmt.Println("Correcting Left...")
 		} else if *&currLast[0] > *&currLast[1] {
-			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS+5)
+			gopigo3.SetMotorDps(g.MOTOR_LEFT, measureDPS+8)
+			gopigo3.SetMotorDps(g.MOTOR_RIGHT, measureDPS-8)
+			fmt.Println("Correcting Right...")
 		} else {
-
+			fmt.Println("Remaining Straight...")
 		}
 		*&currLast[0] = *&currLast[1]
 
@@ -105,8 +109,8 @@ func stepAndRotate(gopigo3 *g.Driver) {
 	time.Sleep(time.Second * 3)
 
 	//90 degree rotation
-	gopigo3.SetMotorDps(g.MOTOR_LEFT, -113)
-	gopigo3.SetMotorDps(g.MOTOR_RIGHT, 113)
+	gopigo3.SetMotorDps(g.MOTOR_LEFT, -115)
+	gopigo3.SetMotorDps(g.MOTOR_RIGHT, 115)
 	time.Sleep(time.Second * 2)
 	gopigo3.SetMotorDps(g.MOTOR_LEFT+g.MOTOR_RIGHT, measureDPS)
 	time.Sleep(time.Second / 2)
